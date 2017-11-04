@@ -5,8 +5,6 @@ import * as _ from 'lodash';
 
 export class TrackService {
 
-    public static count = 0;
-
     public static validateAndCreateAlbum(tracks: MusicTrack[]): Promise<PitchforkAlbum> {
 
         return new Promise<PitchforkAlbum>((resolve, reject) => {
