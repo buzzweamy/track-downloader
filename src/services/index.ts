@@ -1,5 +1,5 @@
 export * from './pitchforkservice';
-export * from './fileservice';
-export * from './trackservice';
+export * from './fileservices';
+export * from './trackservices';
 export * from './youtubeservice';
 export * from './downloadservices';
