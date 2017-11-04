@@ -54,17 +54,17 @@ export class PitchforkService {
             Promise.all(promises)
                 .then(() => {
                     let sortedAndFilteredTrackListData: List[] =
-                        _.chain(PitchforkService.tracklistData)
-                            .filter(track => {
-                                let trackDate = moment(track.pub_date);
-                                return trackDate.isSameOrAfter(startDate, "day") && trackDate.isSameOrBefore(endDate, "day");
-                            })
-                            .sortBy(track => {
-                                return moment(track.pub_date);
-                            })
-                            .value();
+                    _.chain(PitchforkService.tracklistData)
+                        .filter(track => {
+                            let trackDate = moment(track.pub_date);
+                            return trackDate.isSameOrAfter(startDate, "day") && trackDate.isSameOrBefore(endDate, "day");
+                        })
+                        .sortBy(track => {
+                            return moment(track.pub_date);
+                        })
+                        .value();
 
-                    if (!_.isNil(sortedAndFilteredTrackListData)) {
+                if (!_.isNil(sortedAndFilteredTrackListData)) {
                         let count = 1;
                         _.map(sortedAndFilteredTrackListData, tData => {
                             pitchforkTracks.push(MusicTrack.fromDto(tData, count++));
