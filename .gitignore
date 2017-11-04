@@ -1,3 +1,5 @@
 node_modules/
 .vscode/
+output/
 npm-debug.log*
+config/
