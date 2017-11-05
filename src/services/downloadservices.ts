@@ -8,12 +8,12 @@ import { AppendToLogFile } from '../services/';
  */
 export const DownloadTracks = (album: PitchforkAlbum) => {
     let cmd = require('node-cmd');
-    cmd.get('cd output');
+
 
     album.Tracks.forEach(track => {
         AppendToLogFile("Downloading " + track.toString());
-        AppendToLogFile(GetCommandInstruction(track))
-        cmd.get(GetCommandInstruction(track),
+        AppendToLogFile(BuildCommandInstruction(track))
+        cmd.get(BuildCommandInstruction(track),
             (err: any, data: any, stderr: any) => {
                 if (err) {
                     console.log(err);
@@ -29,11 +29,13 @@ export const DownloadTracks = (album: PitchforkAlbum) => {
  * Get youtube-dl command to download the MusicTrack with specified filename
  * @param track The MusicTrack object
  */
-export const GetCommandInstruction = (track: MusicTrack) : string => {
+
+ // TODO make output dir configurable
+const BuildCommandInstruction = (track: MusicTrack): string => {
     if (track.DownloadUrl.DownloadUrlType == DownloadUrlType.VIDEO) {
-        return 'youtube-dl -o "' + track.TrackNumber + ' - ' + track.Artist + ' - ' + track.Title + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
+        return 'youtube-dl -o "output/' + track.TrackNumber + ' - ' + track.Artist + ' - ' + track.Title + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
     }
     else {
-        return 'youtube-dl -o "' + track.TrackNumber + ' - ' + track.Artist + ' - ' + track.Title + '.mp3" ' + track.DownloadUrl.Location;
+        return 'youtube-dl -o "output/' + track.TrackNumber + ' - ' + track.Artist + ' - ' + track.Title + '.mp3" ' + track.DownloadUrl.Location;
     }
 }
