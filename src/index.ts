@@ -1,8 +1,7 @@
 import * as fs from 'fs';
 import * as constants from './constants/';
 import * as _ from 'lodash';
-import { PitchforkService, WriteTrackListToFile, ValidateTracksAndCreateAlbum } from './services/';
-import { DownloadTracks } from './services/';
+import { GetPitchforkTrackList, WriteTrackListToFile, ValidateTracksAndCreateAlbum, DownloadTracks } from './services/';
 import { MusicTrack, PitchforkAlbum } from './models/';
 
 
@@ -29,13 +28,13 @@ testTrack2.Artist = 'CoastDream';
 testTrack2.Title = 'Soft Moon';
 
 
-PitchforkService.getTracks("09/18/2017", "09/24/2017")
+GetPitchforkTrackList("09/18/2017", "09/24/2017")
 .then(tracks => {
     return ValidateTracksAndCreateAlbum(tracks);
 })
 .then(album => {
     WriteTrackListToFile(album.Tracks);
-    //DownloadTracks(album);
+    DownloadTracks(album);
 })
 .catch(err => {
     console.log(err);

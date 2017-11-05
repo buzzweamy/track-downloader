@@ -1,5 +1,5 @@
 import { MusicTrack, DownloadUrl, PitchforkAlbum } from '../models/';
-import { PitchforkService, YoutubeService } from '../services/';
+import { GetDownloadUrlFromTrackReview, YoutubeService } from '../services/';
 import { TrackType } from '../enums/tracktype';
 import * as _ from 'lodash';
 
@@ -47,7 +47,7 @@ export const ValidateTracksAndCreateAlbum = (tracks: MusicTrack[]): Promise<Pitc
 export const GetDownloadUrlForTrack = async (track: MusicTrack): Promise<DownloadUrl> => {
     if (track.TrackType == TrackType.PITCHFORK_TRACK) {
         try {
-            let downloadUrl = await PitchforkService.getDownloadUrlFromTrackReview(track);
+            let downloadUrl = await GetDownloadUrlFromTrackReview(track);
             return downloadUrl;
         }
         catch (err) {

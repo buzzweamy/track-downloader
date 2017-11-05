@@ -1,4 +1,4 @@
-export * from './pitchforkservice';
+export * from './pitchforkservices';
 export * from './fileservices';
 export * from './trackservices';
 export * from './youtubeservice';
