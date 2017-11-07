@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import * as _ from 'lodash';
 import * as constants from '../constants/';
 import * as moment from 'moment';
@@ -26,4 +27,16 @@ export const AppendToLogFile = (line: string) => {
     catch (error) {
         console.log(error);
     }
+}
+
+/**
+ * Cleans up output directory to prepare for new album download
+ */
+export const CleanupOutputDir = (outputPath: string) => {
+    let files = fs.readdirSync(outputPath);
+
+    _.forEach(files, file => {
+        fs.unlinkSync(path.join(outputPath, file));
+    });
+
 }
