@@ -1,6 +1,7 @@
 import { MusicTrack, PitchforkAlbum } from '../models/';
 import { DownloadUrlType } from '../enums/';
 import { AppendToLogFile } from '../services/';
+import { OUTPUT_PATH } from '../constants';
 
 /**
  * Download tracks using youtube-dl
@@ -33,9 +34,9 @@ export const DownloadTracks = (album: PitchforkAlbum) => {
  // TODO make output dir configurable
 const BuildCommandInstruction = (track: MusicTrack): string => {
     if (track.DownloadUrl.DownloadUrlType == DownloadUrlType.VIDEO) {
-        return 'youtube-dl -o "output/' + track.TrackNumber + ' - ' + track.Artist + ' - ' + track.Title + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
+        return 'youtube-dl -o "' + OUTPUT_PATH + track.TrackNumber + ' - ' + track.Artist + ' - ' + track.Title + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
     }
     else {
-        return 'youtube-dl -o "output/' + track.TrackNumber + ' - ' + track.Artist + ' - ' + track.Title + '.mp3" ' + track.DownloadUrl.Location;
+        return 'youtube-dl -o "' + OUTPUT_PATH + track.TrackNumber + ' - ' + track.Artist + ' - ' + track.Title + '.mp3" ' + track.DownloadUrl.Location;
     }
 }
