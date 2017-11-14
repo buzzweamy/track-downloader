@@ -1,9 +1,11 @@
 import { MusicTrack, PitchforkAlbum } from '../models/';
 import { DownloadUrlType } from '../enums/';
-import { AppendToLogFile } from '../services/';
+import { AppendToLogFile, GetDownloadUrlForTrack } from '../services/';
 import { OUTPUT_PATH } from '../constants';
+import { TrackType } from '../enums/tracktype';
 import * as tp from 'typed-promisify';
 import { exec } from 'child_process';
+import * as _ from 'lodash';
 
 /**
  * Download tracks using youtube-dl
@@ -12,6 +14,7 @@ import { exec } from 'child_process';
 export const DownloadTracks = (album: PitchforkAlbum) => {
     let execPromise = tp.promisify(exec);
     let promises: Promise<void | {}>[] = [];
+    let errors: MusicTrack[] = [];
 
     album.Tracks.forEach(track => {
         AppendToLogFile("Downloading " + track.toString());
@@ -22,12 +25,24 @@ export const DownloadTracks = (album: PitchforkAlbum) => {
                 console.log(err);
                 AppendToLogFile("Error occured for file: " + track.toString());
                 AppendToLogFile(err);
+                errors.push(track);
             }
             ));
     });
 
     Promise.all(promises)
         .then(() => {
+            _.forEach(errors, track => {
+                //get track DownloadUrl from youtube
+                track.TrackType = TrackType.BASE_TRACK;
+                GetDownloadUrlForTrack(track)
+                .then(downloadUrl => {
+                    track.DownloadUrl = downloadUrl;
+                    AppendToLogFile("Attempting to download " +  track.toString() +   "from " + track.DownloadUrl.Location);
+                    execPromise(BuildCommandInstruction(track));
+                })
+            })
+
             console.log("Finished downloading files, can validate now");
         });
 }
