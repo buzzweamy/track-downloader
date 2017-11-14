@@ -30,9 +30,10 @@ export const AppendToLogFile = (line: string) => {
 }
 
 /**
- * Cleans up output directory to prepare for new album download
+ * Clean up all files in specified directory
+ * @param outputPath directory to purge files from
  */
-export const CleanupOutputDir = (outputPath: string) => {
+export const CleanupDirectory = (outputPath: string) => {
     let files = fs.readdirSync(outputPath);
 
     _.forEach(files, file => {

@@ -2,27 +2,34 @@ import { MusicTrack, PitchforkAlbum } from '../models/';
 import { DownloadUrlType } from '../enums/';
 import { AppendToLogFile } from '../services/';
 import { OUTPUT_PATH } from '../constants';
+import * as tp from 'typed-promisify';
+import { exec } from 'child_process';
 
 /**
  * Download tracks using youtube-dl
  * @param album The album comprising tracks to be downloaded
  */
 export const DownloadTracks = (album: PitchforkAlbum) => {
-    let cmd = require('node-cmd');
-
+    let execPromise = tp.promisify(exec);
+    let promises: Promise<void | {}>[] = [];
 
     album.Tracks.forEach(track => {
         AppendToLogFile("Downloading " + track.toString());
-        AppendToLogFile(BuildCommandInstruction(track))
-        cmd.get(BuildCommandInstruction(track),
-            (err: any, data: any, stderr: any) => {
-                if (err) {
-                    console.log(err);
-                    AppendToLogFile("Error occured for file: " + track.toString());
-                    AppendToLogFile(err);
-                }
-            });
+        AppendToLogFile(BuildCommandInstruction(track));
+
+        promises.push(execPromise(BuildCommandInstruction(track))
+            .catch(err => {
+                console.log(err);
+                AppendToLogFile("Error occured for file: " + track.toString());
+                AppendToLogFile(err);
+            }
+            ));
     });
+
+    Promise.all(promises)
+        .then(() => {
+            console.log("Finished downloading files, can validate now");
+        });
 }
 
 
@@ -31,7 +38,6 @@ export const DownloadTracks = (album: PitchforkAlbum) => {
  * @param track The MusicTrack object
  */
 
- // TODO make output dir configurable
 const BuildCommandInstruction = (track: MusicTrack): string => {
     if (track.DownloadUrl.DownloadUrlType == DownloadUrlType.VIDEO) {
         return 'youtube-dl -o "' + OUTPUT_PATH + track.TrackNumber + ' - ' + track.Artist + ' - ' + track.Title + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
