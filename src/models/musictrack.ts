@@ -35,6 +35,7 @@ export class MusicTrack{
             newInst.Title = trackDto.display_name.replace(/["“”]/g, '').trim();
             newInst.TrackNumber = (trackNumber < 10) ? "0" + trackNumber.toString() : trackNumber.toString();
         })
+        newInst.Filename = filterSpecialCharacters(newInst.TrackNumber + " - " + newInst.Artist + " - " + newInst.Title);
 
         return newInst;
     }
@@ -62,8 +63,15 @@ export class MusicTrack{
         return displayArtist;
 
     }
-    
+}
 
+
+/**
+ * Filters out any reserved Windows characters
+ * @param track MusicTrack used to create filename
+ */
+const filterSpecialCharacters = (filename: string) => {
+    return filename.replace(/[<>:"/\\|?*]/g, ' ');
 }
 
 export class DownloadUrl {
