@@ -1,4 +1,4 @@
 /**
- * Youtube Data API Key
+ * Add Youtube Data API Key here
  */
-export const YOUTUBE_DATA_API_KEY: string =  "Add key here";
+export const YOUTUBE_DATA_API_KEY: string = "";

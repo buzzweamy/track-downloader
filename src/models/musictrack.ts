@@ -31,10 +31,11 @@ export class MusicTrack{
         newInst.DownloadUrl = new DownloadUrl((!_.isNil(listDto.audio_files[0])) ?  listDto.audio_files[0].embed_code : "");
         newInst.ReviewUrl = BASE_PFORK_URL + listDto.url;
         _.map(listDto.tracks, trackDto => {
-            newInst.Artist = newInst.getArtistNameFromDto(trackDto.artists);
-            newInst.Title = trackDto.display_name.replace(/["“”]/g, '');
+            newInst.Artist = newInst.getArtistNameFromDto(trackDto.artists).trim();
+            newInst.Title = trackDto.display_name.replace(/["“”]/g, '').trim();
             newInst.TrackNumber = (trackNumber < 10) ? "0" + trackNumber.toString() : trackNumber.toString();
         })
+        newInst.Filename = filterSpecialCharacters(newInst.TrackNumber + " - " + newInst.Artist + " - " + newInst.Title);
 
         return newInst;
     }
@@ -62,8 +63,15 @@ export class MusicTrack{
         return displayArtist;
 
     }
-    
+}
 
+
+/**
+ * Filters out any reserved Windows characters
+ * @param track MusicTrack used to create filename
+ */
+const filterSpecialCharacters = (filename: string) => {
+    return filename.replace(/[<>:"/\\|?*]/g, ' ');
 }
 
 export class DownloadUrl {
