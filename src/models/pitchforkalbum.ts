@@ -1,5 +1,5 @@
 import { MusicTrack } from './';
-import { EnsureTracksAreNumbered } from '../services/';
+import { ValidateAlbumTracks } from '../services/';
 
 
 export class PitchforkAlbum {
@@ -19,9 +19,7 @@ export class PitchforkAlbum {
     constructor(albumName: string, startDate: string, tracks: MusicTrack[]) {
         this.AlbumName = albumName;
         this.StartDate = startDate;
-        this.Tracks = EnsureTracksAreNumbered(tracks);
-        console.log(this.Tracks[0].TrackNumber);
-
+        this.Tracks = ValidateAlbumTracks(tracks);
     }
 
 }

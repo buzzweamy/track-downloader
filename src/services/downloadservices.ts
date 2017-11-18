@@ -14,54 +14,98 @@ const execPromise = tp.promisify(exec);
  * Download tracks using youtube-dl
  * @param album The album (or collection of tracks) to download
  */
-export const DownloadTracks = (album: PitchforkAlbum) => {
-    let promises: Promise<void | {}>[] = [];
-    let errors: MusicTrack[] = [];
+export const DownloadTracks = (album: PitchforkAlbum): Promise<boolean> => {
 
-    album.Tracks.forEach(track => {
-        AppendToLogFile("Downloading " + track.toString());
-        AppendToLogFile(BuildCommandInstruction(track));
+    return new Promise<boolean>((resolve, reject) => {
+        let promises: Promise<void | {}>[] = [];
+        let retryPromises: Promise<void | {}>[] = [];
+        let errors: MusicTrack[] = [];
 
-        promises.push(execPromise(BuildCommandInstruction(track))
+        album.Tracks.forEach(track => {
+            AppendToLogFile("Downloading " + track.toString());
+            AppendToLogFile(BuildCommandInstruction(track));
+
+            promises.push(execPromise(BuildCommandInstruction(track))
+                .catch(err => {
+                    console.log(err);
+                    AppendToLogFile("Error occured for file: " + track.toString());
+                    AppendToLogFile(err);
+                    errors.push(track);
+                }
+                ));
+        });
+
+        Promise.all(promises)
+            .then(() => {
+                if (errors.length > 0) {
+                    retryFailedTracks(errors)
+                    .then(success => {
+                        if (success == true) {
+                            console.log("")
+                            resolve(true);
+                        }
+                        else {reject(false)}
+                    })
+                }
+                else {resolve(true);}
+            })
             .catch(err => {
                 console.log(err);
-                AppendToLogFile("Error occured for file: " + track.toString());
-                AppendToLogFile(err);
-                errors.push(track);
-            }
-            ));
+                reject(false);
+            });
     });
-
-    Promise.all(promises)
-        .then(() => {
-            _.forEach(errors, track => {
-                retryDownload(track);
-            })
-
-            console.log("Finished downloading files, can validate now");
-        });
 }
 
 /**
  * Attempt to redownload track with new download url from youtube
  * @param track MusicTrack to retry downloading
  */
-const retryDownload = (track: MusicTrack) => {
-    //get track DownloadUrl from youtube
-    YoutubeService.getYoutubeUrlForTrack(track)
-    .then(downloadUrl => {
-        track.DownloadUrl = downloadUrl;
-        AppendToLogFile("Retrying track: " +  track.toString() +   "from " + track.DownloadUrl.Location);
+//this should return a promise which will be added to retryPromises array in DownloadTracks
+const retryDownload = (track: MusicTrack) :Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+        //get track DownloadUrl from youtube
+        YoutubeService.getYoutubeUrlForTrack(track)
+            .then(downloadUrl => {
+                track.DownloadUrl = downloadUrl;
+                AppendToLogFile("Retrying track: " + track.toString() + "from " + track.DownloadUrl.Location);
 
-        execPromise(BuildCommandInstruction(track))
-        .then(data => {
-            AppendToLogFile("Retry download suceeded for track: " + track.toString());
-        })
-        .catch(err => {
-            console.log(err);
-            AppendToLogFile("Retry download failed for track: " + track.toString());    
-        });
+                execPromise(BuildCommandInstruction(track))
+                    .then(data => {
+                        AppendToLogFile("Retry download suceeded for track: " + track.toString());
+                        resolve(true);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        AppendToLogFile("Retry download failed for track: " + track.toString());
+                        reject(false);
+                    });
+            });
     });
+}
+
+
+/**
+ * Attempt to redownload failed tracks
+ * @param failedTracks MusicTrack collection of failed tracks
+ */
+const retryFailedTracks = (failedTracks: MusicTrack[]) :Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+        let retryPromises: Promise<void | {}>[] = [];
+        _.forEach(failedTracks, track => {
+            retryPromises.push(retryDownload(track));
+        });
+
+        Promise.all(retryPromises)
+            .then(() => {
+                resolve(true);
+            })
+            .catch(err => {
+                console.log(err);
+                reject(false);
+            })
+    });
+
+
 }
 
 
