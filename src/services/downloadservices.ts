@@ -1,4 +1,4 @@
-import { MusicTrack, PitchforkAlbum } from '../models/';
+import { MusicTrack, Album } from '../models/';
 import { DownloadUrlType } from '../enums/';
 import { AppendToLogFile, GetDownloadUrlForTrack, YoutubeService } from '../services/';
 import { OUTPUT_PATH } from '../constants';
@@ -14,7 +14,7 @@ const execPromise = tp.promisify(exec);
  * Download tracks using youtube-dl
  * @param album The album (or collection of tracks) to download
  */
-export const DownloadTracks = (album: PitchforkAlbum): Promise<boolean> => {
+export const DownloadTracks = (album: Album): Promise<boolean> => {
 
     return new Promise<boolean>((resolve, reject) => {
         let promises: Promise<void | {}>[] = [];

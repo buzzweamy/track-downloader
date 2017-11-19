@@ -1,4 +1,4 @@
-import { MusicTrack, DownloadUrl, PitchforkAlbum } from '../models/';
+import { MusicTrack, DownloadUrl, Album } from '../models/';
 import { GetDownloadUrlFromTrackReview, YoutubeService } from '../services/';
 import { TrackType } from '../enums/tracktype';
 import { ReplaceWindowsReservedCharacters } from './../utils/';
@@ -8,9 +8,9 @@ import * as _ from 'lodash';
  * Validate each track has a valid download url and create album
  * @param tracks Array of music tracks to validate and create album from
  */
-export const ValidateTracksAndCreateAlbum = (tracks: MusicTrack[]): Promise<PitchforkAlbum> => {
+export const ValidateTracksAndCreateAlbum = (tracks: MusicTrack[]): Promise<Album> => {
 
-    return new Promise<PitchforkAlbum>((resolve, reject) => {
+    return new Promise<Album>((resolve, reject) => {
         let promises: Promise<DownloadUrl>[] = [];
 
         _.forEach(tracks, track => {
@@ -30,7 +30,7 @@ export const ValidateTracksAndCreateAlbum = (tracks: MusicTrack[]): Promise<Pitc
 
         Promise.all(promises)
             .then(() => {
-                resolve(new PitchforkAlbum("TestAlbum", "10-25-2017", tracks));
+                resolve(new Album("TestAlbum", "10-25-2017", tracks));
                 //construct album here?
                 //resolve(tracks);
             })

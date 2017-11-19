@@ -1,2 +1,2 @@
 export * from './musictrack';
-export * from './pitchforkalbum';
+export * from './album';

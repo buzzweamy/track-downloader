@@ -2,7 +2,7 @@ import { MusicTrack } from './';
 import { ValidateAlbumTracks } from '../services/';
 
 
-export class PitchforkAlbum {
+export class Album {
     /**
      * Name of this album - used in mp3 tags
      */

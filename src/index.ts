@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as constants from './constants/';
 import * as _ from 'lodash';
 import { GetPitchforkTrackList, WriteTrackListToFile, ValidateTracksAndCreateAlbum, DownloadTracks, CleanupDirectory, ZipFiles } from './services/';
-import { MusicTrack, PitchforkAlbum } from './models/';
+import { MusicTrack, Album } from './models/';
 
 
 
@@ -21,6 +21,7 @@ standaloneTracks.push(testTrack, testTrack2);
 
 //Cleanup Output Directory
 CleanupDirectory(constants.OUTPUT_PATH);
+CleanupDirectory("./zips/");
 
 GetPitchforkTrackList("09/18/2017", "09/24/2017")
 .then(tracks => {

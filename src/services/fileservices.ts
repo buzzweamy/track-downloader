@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import * as constants from '../constants/';
 import * as moment from 'moment';
 import { MusicTrack } from '../models/';
+import { GetTimestamp } from '../utils/';
 import * as archiver from 'archiver';
 
 
@@ -53,7 +54,7 @@ export const CleanupDirectory = (outputPath: string) => {
  */
 export const ZipFiles = (path: string, zipFilename: string) => {
     if (fs.existsSync(path)) {
-        let output = fs.createWriteStream(zipFilename + '.zip');
+        let output = fs.createWriteStream('./zips/' + zipFilename + '.' + GetTimestamp() + '.zip');
         let archive = archiver('zip', { zlib: { level: 9 } });
 
         // listen for all archive data to be written
