@@ -32,11 +32,9 @@ ValidateTracksAndCreateAlbum(standaloneTracks)
     WriteTrackListToFile(album);
     return DownloadTracks(album);
 })
-.then(success => {
-    if (success == true) {
+.then(album => {
         console.log("All files downloaded - now zipping...");
-        ZipFiles(constants.OUTPUT_PATH, "PitchForkTracks");
-    }
+        ZipFiles(constants.OUTPUT_PATH, album);
 })
 .catch(err => {
     console.log(err);

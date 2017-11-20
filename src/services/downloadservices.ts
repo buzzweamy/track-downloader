@@ -14,9 +14,9 @@ const execPromise = tp.promisify(exec);
  * Download tracks using youtube-dl
  * @param album The album (or collection of tracks) to download
  */
-export const DownloadTracks = (album: Album): Promise<boolean> => {
+export const DownloadTracks = (album: Album): Promise<Album> => {
 
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<Album>((resolve, reject) => {
         let promises: Promise<void | {}>[] = [];
         let retryPromises: Promise<void | {}>[] = [];
         let errors: MusicTrack[] = [];
@@ -42,16 +42,16 @@ export const DownloadTracks = (album: Album): Promise<boolean> => {
                     .then(success => {
                         if (success == true) {
                             console.log("")
-                            resolve(true);
+                            resolve(album);
                         }
-                        else {reject(false)}
+                        else {reject()}
                     })
                 }
-                else {resolve(true);}
+                else {resolve(album);}
             })
             .catch(err => {
                 console.log(err);
-                reject(false);
+                reject();
             });
     });
 }

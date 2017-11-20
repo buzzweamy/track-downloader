@@ -47,24 +47,24 @@ export const AppendToLogFile = (line: string) => {
  */
 export const CleanupDirectory = (outputPath: string) => {
     if (fs.existsSync(outputPath)) {
-        fsExtra.removeSync(outputPath);
-        // let files = fs.readdirSync(outputPath);
+        let files = fs.readdirSync(outputPath);
 
-        // _.forEach(files, file => {
-        //     fs.unlinkSync(path.join(outputPath, file));
-        // });
+        _.forEach(files, file => {
+            //console.log('removing file/dir : ', outputPath + file);
+            fsExtra.removeSync(outputPath + file);
+         });
     }
 
 }
 
 /**
- * Adds all files in path to a single zip file
- * @param path directory to zip files from
- * @param zipFilename generate zip filename
+ * Creates zip file from album
+ * @param path Path to directory where albums are stored
+ * @param album Album to zip
  */
-export const ZipFiles = (path: string, zipFilename: string) => {
+export const ZipFiles = (path: string, album: Album) => {
     if (fs.existsSync(path)) {
-        let output = fs.createWriteStream('./zips/' + zipFilename + '.' + GetTimestamp() + '.zip');
+        let output = fs.createWriteStream('./zips/' + album.AlbumDirName + '.zip');
         let archive = archiver('zip', { zlib: { level: 9 } });
 
         // listen for all archive data to be written
@@ -100,7 +100,7 @@ export const ZipFiles = (path: string, zipFilename: string) => {
         // pipe archive data to the file
         archive.pipe(output);
 
-        archive.directory(path, false);
+        archive.directory(path + album.AlbumDirName, false);
 
         archive.finalize();
     }
