@@ -3,19 +3,28 @@ import * as path from 'path';
 import * as _ from 'lodash';
 import * as constants from '../constants/';
 import * as moment from 'moment';
-import { MusicTrack } from '../models/';
+import { MusicTrack, Album } from '../models/';
 import { GetTimestamp } from '../utils/';
 import * as archiver from 'archiver';
+import * as fsExtra from 'fs-extra';
 
 
-export const WriteTrackListToFile = (tracks: MusicTrack[], printDate?: boolean) => {
-    fs.appendFileSync(constants.OUTPUT_PATH + constants.TRACKLIST_FILENAME, "Generated on " + moment().toString() + "\n\n");
-    fs.appendFileSync(constants.OUTPUT_PATH + constants.TRACKLIST_FILENAME, "Track,Artist,Title,Date,Download Url\n");
+export const WriteTrackListToFile = (album: Album, printDate?: boolean) => {
+    let albumDir = constants.OUTPUT_PATH + album.AlbumDirName + '/';
+    //createAlbumDirIfDoesNotExist(albumDir);
+    fsExtra.mkdirpSync(albumDir);
+    //mkdirp(albumDir);
+
+    let tracklistFile = albumDir + constants.TRACKLIST_FILENAME;
+    console.log("Attempting to create tracklistFile: ", tracklistFile);
+
+    fs.appendFileSync(tracklistFile, "Generated on " + moment().toString() + "\n\n");
+    fs.appendFileSync(tracklistFile, "Track,Artist,Title,Date,Download Url\n");
 
 
-    _.map(tracks, track => {
+    _.map(album.Tracks, track => {
         try {
-            fs.appendFileSync(constants.OUTPUT_PATH + constants.TRACKLIST_FILENAME, track.outputToLine(printDate));
+            fs.appendFileSync(tracklistFile, track.outputToLine(printDate));
         }
         catch (error) {
             console.log(error);
@@ -38,11 +47,12 @@ export const AppendToLogFile = (line: string) => {
  */
 export const CleanupDirectory = (outputPath: string) => {
     if (fs.existsSync(outputPath)) {
-        let files = fs.readdirSync(outputPath);
+        fsExtra.removeSync(outputPath);
+        // let files = fs.readdirSync(outputPath);
 
-        _.forEach(files, file => {
-            fs.unlinkSync(path.join(outputPath, file));
-        });
+        // _.forEach(files, file => {
+        //     fs.unlinkSync(path.join(outputPath, file));
+        // });
     }
 
 }
@@ -99,4 +109,10 @@ export const ZipFiles = (path: string, zipFilename: string) => {
     }
 
 
+}
+
+const createAlbumDirIfDoesNotExist = (path: string) => {
+    if (!fs.existsSync(path)) {
+        fs.mkdirSync(path);
+    }
 }

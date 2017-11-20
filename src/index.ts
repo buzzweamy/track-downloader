@@ -23,12 +23,13 @@ standaloneTracks.push(testTrack, testTrack2);
 CleanupDirectory(constants.OUTPUT_PATH);
 CleanupDirectory("./zips/");
 
-GetPitchforkTrackList("09/18/2017", "09/24/2017")
-.then(tracks => {
-    return ValidateTracksAndCreateAlbum(tracks);
-})
+// GetPitchforkTrackList("09/18/2017", "09/24/2017")
+// .then(tracks => {
+//     return ValidateTracksAndCreateAlbum(tracks);
+// })
+ValidateTracksAndCreateAlbum(standaloneTracks)
 .then(album => {
-    WriteTrackListToFile(album.Tracks);
+    WriteTrackListToFile(album);
     return DownloadTracks(album);
 })
 .then(success => {

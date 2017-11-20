@@ -13,6 +13,7 @@
     "@types/cheerio": "^0.22.3",
     "archiver": "^2.1.0",
     "cheerio": "^1.0.0-rc.2",
+    "fs-extra": "^4.0.2",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "node-fetch": "^1.7.3",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/archiver": "^2.0.1",
+    "@types/fs-extra": "^4.0.5",
     "@types/lodash": "^4.14.80",
     "@types/node": "^8.0.31",
     "@types/node-fetch": "^1.6.7",

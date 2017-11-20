@@ -23,9 +23,9 @@ export const DownloadTracks = (album: Album): Promise<boolean> => {
 
         album.Tracks.forEach(track => {
             AppendToLogFile("Downloading " + track.toString());
-            AppendToLogFile(BuildCommandInstruction(track));
+            AppendToLogFile(BuildCommandInstruction(track, album.AlbumDirName));
 
-            promises.push(execPromise(BuildCommandInstruction(track))
+            promises.push(execPromise(BuildCommandInstruction(track, album.AlbumDirName))
                 .catch(err => {
                     console.log(err);
                     AppendToLogFile("Error occured for file: " + track.toString());
@@ -38,7 +38,7 @@ export const DownloadTracks = (album: Album): Promise<boolean> => {
         Promise.all(promises)
             .then(() => {
                 if (errors.length > 0) {
-                    retryFailedTracks(errors)
+                    retryFailedTracks(errors, album)
                     .then(success => {
                         if (success == true) {
                             console.log("")
@@ -61,7 +61,7 @@ export const DownloadTracks = (album: Album): Promise<boolean> => {
  * @param track MusicTrack to retry downloading
  */
 //this should return a promise which will be added to retryPromises array in DownloadTracks
-const retryDownload = (track: MusicTrack) :Promise<boolean> => {
+const retryDownload = (track: MusicTrack, album: Album) :Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
         //get track DownloadUrl from youtube
         YoutubeService.getYoutubeUrlForTrack(track)
@@ -69,7 +69,7 @@ const retryDownload = (track: MusicTrack) :Promise<boolean> => {
                 track.DownloadUrl = downloadUrl;
                 AppendToLogFile("Retrying track: " + track.toString() + "from " + track.DownloadUrl.Location);
 
-                execPromise(BuildCommandInstruction(track))
+                execPromise(BuildCommandInstruction(track, album.AlbumDirName))
                     .then(data => {
                         AppendToLogFile("Retry download suceeded for track: " + track.toString());
                         resolve(true);
@@ -88,11 +88,11 @@ const retryDownload = (track: MusicTrack) :Promise<boolean> => {
  * Attempt to redownload failed tracks
  * @param failedTracks MusicTrack collection of failed tracks
  */
-const retryFailedTracks = (failedTracks: MusicTrack[]) :Promise<boolean> => {
+const retryFailedTracks = (failedTracks: MusicTrack[], album: Album) :Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
         let retryPromises: Promise<void | {}>[] = [];
         _.forEach(failedTracks, track => {
-            retryPromises.push(retryDownload(track));
+            retryPromises.push(retryDownload(track, album));
         });
 
         Promise.all(retryPromises)
@@ -113,11 +113,13 @@ const retryFailedTracks = (failedTracks: MusicTrack[]) :Promise<boolean> => {
  * Get youtube-dl command to download the MusicTrack
  * @param track MusicTrack object to build command for
  */
-const BuildCommandInstruction = (track: MusicTrack): string => {
+const BuildCommandInstruction = (track: MusicTrack, dirName?: string): string => {
+    let outputDir = !_.isNil(dirName) ? OUTPUT_PATH + dirName + '/' : OUTPUT_PATH;
+
     if (track.DownloadUrl.DownloadUrlType == DownloadUrlType.VIDEO) {
-        return 'youtube-dl -o "' + OUTPUT_PATH + track.Filename + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
+        return 'youtube-dl -o "' + outputDir + track.Filename + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
     }
     else {
-        return 'youtube-dl -o "' + OUTPUT_PATH + track.Filename + '.mp3" ' + track.DownloadUrl.Location;
+        return 'youtube-dl -o "' + outputDir + track.Filename + '.mp3" ' + track.DownloadUrl.Location;
     }
 }
