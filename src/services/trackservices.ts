@@ -2,13 +2,16 @@ import { MusicTrack, DownloadUrl, Album } from '../models/';
 import { GetDownloadUrlFromTrackReview, YoutubeService } from '../services/';
 import { TrackType } from '../enums/tracktype';
 import { ReplaceWindowsReservedCharacters } from './../utils/';
+import * as constants from '../constants';
 import * as _ from 'lodash';
+
+const NodeID3 = require('node-id3');
 
 /**
  * Validate each track has a valid download url and create album
  * @param tracks Array of music tracks to validate and create album from
  */
-export const ValidateTracksAndCreateAlbum = (tracks: MusicTrack[]): Promise<Album> => {
+export const ValidateTracksAndCreateAlbum = (tracks: MusicTrack[], albumName: string): Promise<Album> => {
 
     return new Promise<Album>((resolve, reject) => {
         let promises: Promise<DownloadUrl>[] = [];
@@ -30,7 +33,7 @@ export const ValidateTracksAndCreateAlbum = (tracks: MusicTrack[]): Promise<Albu
 
         Promise.all(promises)
             .then(() => {
-                resolve(new Album("TestAlbum", "10-25-2017", tracks));
+                resolve(new Album(albumName, "10-25-2017", tracks));
                 //construct album here?
                 //resolve(tracks);
             })
@@ -81,6 +84,31 @@ export const ValidateAlbumTracks = (tracks: MusicTrack[]): MusicTrack[] => {
     tracks = ensureTracksHaveFilenames(tracks);
     return tracks;
 }
+
+export const TagAlbum = (album: Album) => {
+    _.forEach(album.Tracks, track => {
+        let file = constants.OUTPUT_PATH + album.AlbumDirName + '/' + track.Filename + '.mp3';
+        console.log('Writing tags to file: ', file);
+        let tags = {
+            title: track.Title,
+            artist: track.Artist,
+            album: album.AlbumName,
+            trackNumber: track.TrackNumber,
+            TPE2: "Various Artists"
+        }
+
+        let ID3FrameBuffer = NodeID3.create(tags)   //  Returns ID3-Frame buffer
+        //  Asynchronous
+        //NodeID3.create(tags, function (frame: any) { })
+
+        //  Write ID3-Frame into (.mp3) file
+        let success = NodeID3.write(tags, file) //  Returns true/false
+        //NodeID3.write(tags, file, function (err: any) { })
+
+    })
+
+}
+
 
 /**
  * Add track number to tracks if missing

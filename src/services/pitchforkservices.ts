@@ -16,7 +16,9 @@ export const GetPitchforkTrackList = (startDateStr?: string, endDateStr?: string
     const FetchTracklist = async (startLocation: number =
         0): Promise<void> => {
         try {
-            let res = await fetch(TRACKLIST_JSON_BASE_URL + "&size=200&start=" + startLocation);
+            let url = TRACKLIST_JSON_BASE_URL + "&size=200&start=" + startLocation;
+            let res = await fetch(url);
+            console.log('Calling: ', url);
             let json: RootObject = await res.json();
             if (!_.isNil(json)) {
                 tracklistData = tracklistData.concat(json.results.list);
@@ -36,7 +38,7 @@ export const GetPitchforkTrackList = (startDateStr?: string, endDateStr?: string
         }
         else {
             startDate = moment(startDateStr, DATE_FORMAT);
-            endDate = _.isNil(endDateStr) ? moment() : moment(endDateStr, DATE_FORMAT);
+            endDate = _.isNil(endDateStr) ? startDate.clone().add(1, 'weeks').subtract(1, "day") : moment(endDateStr, DATE_FORMAT);
         }
 
         let numberOfApiCalls = CalculateNumberOfCalls(startDate);

@@ -116,10 +116,13 @@ const retryFailedTracks = (failedTracks: MusicTrack[], album: Album) :Promise<bo
 const BuildCommandInstruction = (track: MusicTrack, dirName?: string): string => {
     let outputDir = !_.isNil(dirName) ? OUTPUT_PATH + dirName + '/' : OUTPUT_PATH;
 
-    if (track.DownloadUrl.DownloadUrlType == DownloadUrlType.VIDEO) {
-        return 'youtube-dl -o "' + outputDir + track.Filename + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
-    }
-    else {
-        return 'youtube-dl -o "' + outputDir + track.Filename + '.mp3" ' + track.DownloadUrl.Location;
-    }
+    //if file output is wav, need to convert to mp3. This should cover all options
+    return 'youtube-dl -o "' + outputDir + track.Filename + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
+
+    // if (track.DownloadUrl.DownloadUrlType == DownloadUrlType.VIDEO) {
+    //     return 'youtube-dl -o "' + outputDir + track.Filename + '.%(ext)s" --extract-audio --audio-format mp3 ' + track.DownloadUrl.Location;
+    // }
+    // else {
+    //     return 'youtube-dl -o "' + outputDir + track.Filename + '.mp3" ' + track.DownloadUrl.Location;
+    // }
 }

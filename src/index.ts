@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as constants from './constants/';
 import * as _ from 'lodash';
-import { GetPitchforkTrackList, WriteTrackListToFile, ValidateTracksAndCreateAlbum, DownloadTracks, CleanupDirectory, ZipFiles } from './services/';
+import { GetPitchforkTrackList, WriteTrackListToFile, ValidateTracksAndCreateAlbum, DownloadTracks, CleanupDirectory, ZipFiles, TagAlbum } from './services/';
 import { MusicTrack, Album } from './models/';
 
 
@@ -23,19 +23,33 @@ standaloneTracks.push(testTrack, testTrack2);
 CleanupDirectory(constants.OUTPUT_PATH);
 CleanupDirectory("./zips/");
 
-// GetPitchforkTrackList("09/18/2017", "09/24/2017")
-// .then(tracks => {
-//     return ValidateTracksAndCreateAlbum(tracks);
-// })
-ValidateTracksAndCreateAlbum(standaloneTracks)
+//GetPitchforkTrackList("09/18/2017", "09/24/2017")
+//GetPitchforkTrackList("11/13/2017", "11/19/2017")
+
+/**
+ * Download tracks from this date 
+ */
+//TODO make this an argument to be passed in
+let TRACKS_DATE: string = "10/16/2017";
+
+
+GetPitchforkTrackList(TRACKS_DATE)
+.then(tracks => {
+    return ValidateTracksAndCreateAlbum(tracks, "Pitchfork Tracks " + TRACKS_DATE.replace(/\//g, "-"));
+})
 .then(album => {
     WriteTrackListToFile(album);
     return DownloadTracks(album);
 })
 .then(album => {
-        console.log("All files downloaded - now zipping...");
-        ZipFiles(constants.OUTPUT_PATH, album);
+    TagAlbum(album);
 })
+// .then(album => {
+//         console.log("All files downloaded - now tagging...");
+//         TagAlbum(album);
+//         console.log("All files downloaded - now zipping...");
+//         //ZipFiles(album);
+// })
 .catch(err => {
     console.log(err);
 })

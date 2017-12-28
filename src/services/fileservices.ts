@@ -62,8 +62,8 @@ export const CleanupDirectory = (outputPath: string) => {
  * @param path Path to directory where albums are stored
  * @param album Album to zip
  */
-export const ZipFiles = (path: string, album: Album) => {
-    if (fs.existsSync(path)) {
+export const ZipFiles = (album: Album) => {
+    if (fs.existsSync(constants.OUTPUT_PATH)) {
         let output = fs.createWriteStream('./zips/' + album.AlbumDirName + '.zip');
         let archive = archiver('zip', { zlib: { level: 9 } });
 
@@ -100,12 +100,12 @@ export const ZipFiles = (path: string, album: Album) => {
         // pipe archive data to the file
         archive.pipe(output);
 
-        archive.directory(path + album.AlbumDirName, false);
+        archive.directory(constants.OUTPUT_PATH + album.AlbumDirName, false);
 
         archive.finalize();
     }
     else {
-        AppendToLogFile("Error while zipping: Path - " + path + " not found!");
+        AppendToLogFile("Error while zipping: Path - " + constants.OUTPUT_PATH + " not found!");
     }
 
 
