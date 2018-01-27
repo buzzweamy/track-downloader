@@ -25,7 +25,7 @@ export class MusicTrack{
         let newInst = new MusicTrack();
         
         newInst.TrackType = TrackType.PITCHFORK_TRACK;
-        newInst.DateStr = moment(listDto.pub_date).format(DATE_FORMAT);
+        newInst.DateStr = moment(listDto.pubDate).format(DATE_FORMAT);
         newInst.DownloadUrl = new DownloadUrl((!_.isNil(listDto.audio_files[0])) ?  listDto.audio_files[0].embed_code : "");
         newInst.ReviewUrl = BASE_PFORK_URL + listDto.url;
         _.map(listDto.tracks, trackDto => {

@@ -90,10 +90,10 @@
         socialDescription: string;
         authors: Author[];
         id: string;
-        content_type: string;
+        contentType: string;
         tags: any[];
         image: Image;
-        pub_date: Date;
+        pubDate: Date;
         timestamp: any;
         last_updated_date: Date;
         title: string;

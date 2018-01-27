@@ -59,11 +59,11 @@ export const GetPitchforkTrackList = (startDateStr?: string, endDateStr?: string
                 let sortedAndFilteredTrackListData: List[] =
                     _.chain(tracklistData)
                         .filter(track => {
-                            let trackDate = moment(track.pub_date);
+                            let trackDate = moment(track.pubDate);
                             return trackDate.isSameOrAfter(startDate, "day") && trackDate.isSameOrBefore(endDate, "day");
                         })
                         .sortBy(track => {
-                            return moment(track.pub_date);
+                            return moment(track.pubDate);
                         })
                         .value();
 
@@ -95,7 +95,7 @@ const CalculateNumberOfCalls = (startDate: moment.Moment): number => {
 export const PrintTracklist = (tracklist: List[]) => {
     if (!_.isNil(tracklist)) {
         tracklist.forEach(tData => {
-            let momentDate = moment(tData.pub_date);
+            let momentDate = moment(tData.pubDate);
             if (tData.tracks.length > 1) {
                 _.map(tData.tracks, track => {
                     console.log(momentDate.format(DATE_FORMAT) + ": " + GetArtistName(track.artists) + " - " + track.display_name.replace(/[“”]/g, ''));
