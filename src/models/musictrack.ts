@@ -8,7 +8,7 @@ import { TrackType, DownloadUrlType } from '../enums/';
 /**
  * Represents track object with all required fields for downloading and tagging
  */
-export class MusicTrack{
+export class MusicTrack {
     public Artist: string;
     public Title: string;
     public TrackNumber: string;
@@ -18,52 +18,44 @@ export class MusicTrack{
     public ReviewUrl: string;
     public TrackType: TrackType;
 
-    constructor() {
-    }
+    constructor() {}
 
     public static fromDto(listDto: List, trackNumber: number): MusicTrack {
         let newInst = new MusicTrack();
-        
+
         newInst.TrackType = TrackType.PITCHFORK_TRACK;
         newInst.DateStr = moment(listDto.pubDate).format(DATE_FORMAT);
-        newInst.DownloadUrl = new DownloadUrl((!_.isNil(listDto.audio_files[0])) ?  listDto.audio_files[0].embed_code : "");
+        newInst.DownloadUrl = new DownloadUrl(!_.isNil(listDto.audio_files[0]) ? listDto.audio_files[0].embedUrl : '');
         newInst.ReviewUrl = BASE_PFORK_URL + listDto.url;
         _.map(listDto.tracks, trackDto => {
             newInst.Artist = newInst.getArtistNameFromDto(trackDto.artists).trim();
             newInst.Title = trackDto.display_name.replace(/["“”]/g, '').trim();
-            newInst.TrackNumber = (trackNumber < 10) ? "0" + trackNumber.toString() : trackNumber.toString();
-        })
+            newInst.TrackNumber = trackNumber < 10 ? '0' + trackNumber.toString() : trackNumber.toString();
+        });
 
         return newInst;
     }
 
-    public outputToLine = (printDate? : boolean) : string => {
-        return this.TrackNumber + "," + this.Artist + "," + this.Title + "," + this.DateStr + "," + this.DownloadUrl.Location + "\n";
+    public outputToLine = (printDate?: boolean): string => {
+        return this.TrackNumber + ',"' + this.Artist + '","' + this.Title + '",' + this.DateStr + ',' + this.DownloadUrl.Location + '\n';
         //return this.TrackNumber + " - " + this.Artist + " - " + this.Title + " - " + this.DateStr + " - " + this.DownloadUrl + "\n";
-    }
+    };
 
-    public toString = () : string => {
-        return this.TrackNumber + " - " + this.Artist + " - " + this.Title;
-    }
+    public toString = (): string => {
+        return this.TrackNumber + ' - ' + this.Artist + ' - ' + this.Title;
+    };
 
     /**
      * Get artist name from List object. Combines potentially multiple artists into one string
      */
     private getArtistNameFromDto(artists: Artist[]) {
-
-        let displayArtist: string =
-            _.map(artists, artist => {
-                return artist.name;
-            })
-                .join(" ; ");
+        let displayArtist: string = _.map(artists, artist => {
+            return artist.name;
+        }).join(' ; ');
 
         return displayArtist;
-
     }
 }
-
-
-
 
 export class DownloadUrl {
     /**

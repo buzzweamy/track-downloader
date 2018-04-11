@@ -68,44 +68,54 @@
     }
 
     export interface AudioFile {
-        id: string;
-        bnm: boolean;
-        artist_name: string;
-        title: string;
-        provider_data: ProviderData;
+        artwork?: any;
+        associated_content: string;
         audio_file?: any;
         audio_file_name?: any;
-        availability: number;
-        embed_code: string;
-        artwork?: any;
+        bnm: boolean;
+        description: string;
         download_url: string;
-        associated_content: string;
+        embedUrl: string;
+        id: string;
+        name: string;
+        provider: string;
+        provider_data: ProviderData;
+        title: string;
+        //artist_name: string;
+        //availability: number;
+        
+        
+        
+        
     }
 
     export interface List {
-        subhead: string;
-        abstract: string;
-        seoDescription: string;
-        promoDescription: string;
-        socialDescription: string;
-        authors: Author[];
-        id: string;
-        contentType: string;
-        tags: any[];
-        image: Image;
-        pubDate: Date;
-        timestamp: any;
-        last_updated_date: Date;
-        title: string;
-        seo_title: string;
-        socialTitle: string;
-        promoTitle: string;
-        url: string;
-        tracks: Track[];
         artists: Artist[];
-        bnm: boolean;
-        genres: Genre[];
         audio_files: AudioFile[];
+        authors: Author[];
+        bnm: boolean;
+        contentType: string;
+        genres: Genre[];
+        id: string;
+        modifiedAt: Date;
+        promoDescription: string;
+        promoTitle: string;
+        pubDate: Date;
+        seoDescription: string;
+        seoTitle: string;
+        socialDescription: string;
+        socialTitle: string;
+        subhead: string;
+        tags: any[];
+        timestamp: number;
+        title: string;
+        tracks: Track[];
+        url: string;
+        
+        //abstract: string;
+        //image: Image;
+        //last_updated_date: Date;
+        
     }
 
     export interface Results {
